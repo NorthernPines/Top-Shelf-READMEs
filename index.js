@@ -18,14 +18,44 @@ function projectBasics() {
             },
         ])
         .then((response) => {
-            fs.writeFile('README.md',
+            const display = 
+`# ${response.title}
 
-`# ${response.title}\n
-## ${response.description}\n`,
+## Description
 
-            (error) =>
-            error ? console.log(error) : console.log("Enjoy your README and use again next time!")
-            );
+${response.description}
+
+`
+
+            fs.writeFile('README.md', display, (error) =>
+            error ? console.log(error) : console.log());
+            tableOfContent();
         })
 }
 
+function tableOfContent() {
+    inquirer
+        .prompt([ 
+            {
+                type: 'checkbox',
+                message: 'Which sections would you like to include in your README?',
+                name: 'sections',
+                choices: ['Installation', 'Usage', 'Features', 'License', 'Visuals', 'Credits', 'Tests', 'Questions']
+            },
+        ])
+        .then((response) => {
+            let display = 
+`## Table of Contents
+
+
+`
+
+            response.sections.forEach(displayToC)
+
+            function displayToC(section) {
+                display += `[${section}](#${section})\n\n`;
+            }
+            
+            fs.appendFile('README.md', display, (error) => console.log(error));
+        })
+}
