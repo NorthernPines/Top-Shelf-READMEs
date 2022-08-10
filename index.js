@@ -23,12 +23,13 @@ function projectBasics() {
 
 ## Description
 
-${response.description}
+    ${response.description}
 
 `
 
             fs.writeFile('README.md', display, (error) =>
             error ? console.log(error) : console.log());
+
             tableOfContent();
         })
 }
@@ -57,5 +58,52 @@ function tableOfContent() {
             }
             
             fs.appendFile('README.md', display, (error) => console.log(error));
+
+            installation();
+        })
+}
+
+function installation() {
+    inquirer
+        .prompt([ 
+            {
+                type: 'confirm',
+                message: 'Would you like to include a snippet of code in your installation section? ',
+                name: 'possibleCode'
+            },
+            {
+                type: 'input',
+                message: 'Please first describe the process to install your program: ',
+                name: 'installation'
+            },
+        ])
+        .then((response) => {
+            var display = 
+`## Installation
+
+${response.installation}
+
+`
+
+            if (response.possibleCode) {
+                inquirer.prompt([
+                    {
+                        type: 'input',
+                        message: 'Enter the snippit of code for installation purposes',
+                        name: 'snippit'
+                    },
+                ])
+                .then((nestedResponse) => {
+                    display += ` * ${nestedResponse.snippit}\n`;
+                    console.log(display);
+                    fs.appendFile('README.md', display, (error) => console.log(error));
+                })
+            } else {
+                fs.appendFile('README.md', display, (error) => console.log(error));
+            }
+            
+            
+
+            // usage();
         })
 }
