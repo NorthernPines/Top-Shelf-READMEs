@@ -59,51 +59,58 @@ function tableOfContent() {
             
             fs.appendFile('README.md', display, (error) => console.log(error));
 
-            installation();
+            var sectionsIncluded = response.sections;
+            console.log(sectionsIncluded);
+            installation(sectionsIncluded);
         })
 }
 
-function installation() {
-    inquirer
-        .prompt([ 
-            {
-                type: 'confirm',
-                message: 'Would you like to include a snippet of code in your installation section? ',
-                name: 'possibleCode'
-            },
-            {
-                type: 'input',
-                message: 'Please first describe the process to install your program: ',
-                name: 'installation'
-            },
-        ])
-        .then((response) => {
-            var display = 
+function installation(sectionsIncluded) {
+    if (sectionsIncluded.includes('Installation')) {
+        inquirer
+            .prompt([ 
+                {
+                    type: 'confirm',
+                    message: 'Would you like to include a snippet of code in your installation section? ',
+                    name: 'possibleCode'
+                },
+                {
+                    type: 'input',
+                    message: 'Please first describe the process to install your program: ',
+                    name: 'installation'
+                },
+            ])
+            .then((response) => {
+                var display = 
 `## Installation
 
 ${response.installation}
 
 `
 
-            if (response.possibleCode) {
-                inquirer.prompt([
-                    {
-                        type: 'input',
-                        message: 'Enter the snippit of code for installation purposes',
-                        name: 'snippit'
-                    },
-                ])
-                .then((nestedResponse) => {
-                    display += ` * ${nestedResponse.snippit}\n`;
-                    console.log(display);
+                if (response.possibleCode) {
+                    inquirer.prompt([
+                        {
+                            type: 'input',
+                            message: 'Enter the alt text for the image',
+                            name: 'altText'
+                        },
+                        {
+                            type: 'input',
+                            message: 'Please enter the local path to the image(./.../Snippit.png) ',
+                            name: 'path'
+                        }
+                    ])
+                    .then((nestedResponse) => {
+                        display += `![${nestedResponse.altText}](${nestedResponse.path}\n)`;
+                        console.log(display);
+                        fs.appendFile('README.md', display, (error) => console.log(error));
+                    })
+                } else {
                     fs.appendFile('README.md', display, (error) => console.log(error));
-                })
-            } else {
-                fs.appendFile('README.md', display, (error) => console.log(error));
-            }
+                }
             
-            
-
             // usage();
         })
+    }
 }
