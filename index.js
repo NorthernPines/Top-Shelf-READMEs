@@ -1,5 +1,6 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
+const { features } = require('process');
 
 projectBasics();
 
@@ -70,13 +71,8 @@ function installation(sectionsIncluded) {
         inquirer
             .prompt([ 
                 {
-                    type: 'confirm',
-                    message: 'Would you like to include a snippet of code in your installation section? ',
-                    name: 'possibleCode'
-                },
-                {
                     type: 'input',
-                    message: 'Please first describe the process to install your program: ',
+                    message: 'Please describe the process to install your program: ',
                     name: 'installation'
                 },
             ])
@@ -87,30 +83,41 @@ function installation(sectionsIncluded) {
 ${response.installation}
 
 `
+                fs.appendFile('README.md', display, (error) => console.log(error));
+                // usage(sectionsIncluded);     
+            })
+    }
+}
 
-                if (response.possibleCode) {
-                    inquirer.prompt([
-                        {
-                            type: 'input',
-                            message: 'Enter the alt text for the image',
-                            name: 'altText'
-                        },
-                        {
-                            type: 'input',
-                            message: 'Please enter the local path to the image(./.../Snippit.png) ',
-                            name: 'path'
-                        }
-                    ])
-                    .then((nestedResponse) => {
-                        display += `![${nestedResponse.altText}](${nestedResponse.path}\n)`;
-                        console.log(display);
-                        fs.appendFile('README.md', display, (error) => console.log(error));
-                    })
-                } else {
-                    fs.appendFile('README.md', display, (error) => console.log(error));
-                }
-            
-            // usage();
-        })
+function usage(sectionsIncluded) {
+    if (sectionsIncluded.includes('Usage')) {
+        var display = `## Usage\n`;
+        do {
+            inquirer
+                .prompt([
+                    {
+                        type: 'input',
+                        message: 'Please enter bullet point: ',
+                        name: 'bullet'
+                    },
+                    {
+                        type: 'confirm',
+                        message: 'Do you want to enter another point?',
+                        name: 'again',
+                        default: true
+                    },
+                ])
+                .then((response) => {
+                    display += `* ${response.bullet}`
+                    console.log(response.again); 
+                })
+
+        } while (response.again)
+
+        fs.appendFile('README.md', display, (error) => console.log(error));
+
+        // features(sectionsIncluded);
+    } else {
+        // features(sectionsIncluded);
     }
 }
